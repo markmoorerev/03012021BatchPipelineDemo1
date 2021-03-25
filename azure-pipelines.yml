@@ -7,16 +7,16 @@ trigger:
   branches:
     include:
     - main
-  paths:
-    include:
-    - Demos/JavaScriptWithDotnetAPI
+  # paths:
+  #   include:
+  #   - Demos/JavaScriptWithDotnetAPI
 
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: 'Demos/JavaScriptWithDotnetAPI/memesaver/memesaver.sln'
+  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -45,27 +45,29 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+#sonarcloud Prepare Analysis Configuration
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: '03012021BatchSonarcloudToken'
+    organization: '03012021batch'
+    scannerMode: 'MSBuild'
+    projectKey: '03012021Batch_TestDemo'
+    projectName: 'TestDemo'
+
+
 #this will restore and build the directory.
 - task: DotNetCoreCLI@2
   displayName: 'building'
   inputs:
     command: 'build'
-    projects: 'Demos/JavaScriptWithDotnetAPI/memesaver/*.sln'
-    workingDirectory: 'Demos/JavaScriptWithDotnetAPI/memesaver'
+    projects: '$(solution)'
+    # workingDirectory: ''
     arguments: '--configuration $(buildConfiguration)'
 
-# - task: VSBuild@1
-#   inputs:
-#     solution: '$(solution)'
-#     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
-
-
-# - task: VSTest@2
-#   inputs:
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
+- task: SonarCloudAnalyze@1
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publishing'
