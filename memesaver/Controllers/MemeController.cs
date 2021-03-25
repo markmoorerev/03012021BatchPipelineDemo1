@@ -6,8 +6,6 @@ using BusinessLogic;
 using Microsoft.AspNetCore.Mvc;
 using models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace memesaver
 {
 	[Route("api/[controller]")]
@@ -37,7 +35,6 @@ namespace memesaver
 
 		// POST api/<MemeController>
 		[HttpPost]
-		// [Route("/postrequest")]
 		public Person Post([FromBody] Person obj)
 		{
 			Console.WriteLine($"YAY! we made it to the C# side with {obj.Fname}, {obj.Lname}. ");
@@ -45,7 +42,6 @@ namespace memesaver
 			//the business logic layer implements business requirements. Thisi s where the majority of 
 			// the data manipulation will be.
 			Person obj1 = business.Login(obj);
-
 			return obj1;
 		}
 
