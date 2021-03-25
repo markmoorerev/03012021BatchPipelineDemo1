@@ -53,7 +53,8 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: '03012021Batch_TestDemo'
     projectName: 'TestDemo'
-
+    #the below is from Nicks code
+    extraProperties: 'sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/*/coverage.opencover.xml'
 
 #this will restore and build the directory.
 - task: DotNetCoreCLI@2
@@ -63,6 +64,13 @@ steps:
     projects: '$(solution)'
     # workingDirectory: ''
     arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*.sln'
+    arguments: '--configuration $(buildConfiguration) --collect "xplat code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover'
+    testRunTitle: 'dotnet test'
 
 - task: SonarCloudAnalyze@1
 - task: SonarCloudPublish@1
