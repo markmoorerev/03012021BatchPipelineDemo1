@@ -56,7 +56,7 @@ steps:
     projectKey: '03012021Batch_TestDemo'
     projectName: 'TestDemo'
     #the below is from Nicks code and is necessary for code coverage to be published to sonarcloud.
-    extraProperties: 'sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/*/coverage.opencover.xml'
+    # extraProperties: 'sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/*/coverage.opencover.xml'
 
 #this will restore and build the directory.
 - task: DotNetCoreCLI@2
@@ -73,8 +73,14 @@ steps:
     command: 'test'
     projects: '**/*.sln'
     # the below is necessary for code coverage to work.
-    arguments: '--configuration $(buildConfiguration) --collect "xplat code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover'
-    testRunTitle: 'dotnet test'
+    arguments: --configuration $(buildConfiguration) --collect "Code Coverage"
+    # testRunTitle: 'dotnet test'
+
+#publish so that SonarCloud can see it.
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '**/coverage.opencover.xml'
 
 - task: SonarCloudAnalyze@1
 - task: SonarCloudPublish@1
