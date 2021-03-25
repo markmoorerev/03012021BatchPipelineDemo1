@@ -38,7 +38,7 @@ steps:
     version: '2.x'
     # performMultiLevelLookup: true
 
-
+#install the nuget packages the project needs
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
@@ -46,6 +46,8 @@ steps:
     restoreSolution: '$(solution)'
 
 #sonarcloud Prepare Analysis Configuration
+#follow the instructions on sonarcloud
+#add the 'extraProperties' section or you won't get code coverage
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: '03012021BatchSonarcloudToken'
@@ -53,7 +55,7 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: '03012021Batch_TestDemo'
     projectName: 'TestDemo'
-    #the below is from Nicks code
+    #the below is from Nicks code and is necessary for code coverage to be published to sonarcloud.
     extraProperties: 'sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/*/coverage.opencover.xml'
 
 #this will restore and build the directory.
@@ -65,10 +67,12 @@ steps:
     # workingDirectory: ''
     arguments: '--configuration $(buildConfiguration)'
 
+# you have to test if you want to print the code coverage.
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: '**/*.sln'
+    # the below is necessary for code coverage to work.
     arguments: '--configuration $(buildConfiguration) --collect "xplat code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover'
     testRunTitle: 'dotnet test'
 
