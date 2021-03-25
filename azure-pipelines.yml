@@ -7,16 +7,16 @@ trigger:
   branches:
     include:
     - main
-  paths:
-    include:
-    - Demos/JavaScriptWithDotnetAPI
+  # paths:
+  #   include:
+  #   - Demos/JavaScriptWithDotnetAPI
 
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: 'Demos/JavaScriptWithDotnetAPI/memesaver/memesaver.sln'
+  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -50,8 +50,8 @@ steps:
   displayName: 'building'
   inputs:
     command: 'build'
-    projects: 'Demos/JavaScriptWithDotnetAPI/memesaver/*.sln'
-    workingDirectory: 'Demos/JavaScriptWithDotnetAPI/memesaver'
+    projects: '$(solution)'
+    # workingDirectory: ''
     arguments: '--configuration $(buildConfiguration)'
 
 # - task: VSBuild@1
